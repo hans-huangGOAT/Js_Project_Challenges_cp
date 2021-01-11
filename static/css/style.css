@@ -1,0 +1,21 @@
+.navbar{
+    background-color:blueviolet;
+    height: 90px;
+    width: 100%;
+    text-align: center;
+}
+
+.container-1{
+    border: 1px solid black;
+    width: 75%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.flex-container-ageid{
+    border: 1px solid black;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 10px;
+    justify-content: space-around;
+}
