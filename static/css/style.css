@@ -5,17 +5,25 @@
     text-align: center;
 }
 
-.container-1{
+.container-1, .container-2{
     border: 1px solid black;
     width: 75%;
     margin: 0 auto;
     text-align: center;
 }
 
-.flex-container-ageid{
+.flex-container-ageid, .flex-container-cat-gen{
     border: 1px solid black;
     display: flex;
     flex-wrap: wrap;
     padding: 10px;
     justify-content: space-around;
+}
+
+#gen-cat-btn{
+    margin: 10px;
+}
+
+.flex-container-cat-gen img{
+    width: 250px;
 }
