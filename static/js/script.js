@@ -90,3 +90,24 @@ function displayFinalMessage(message, yourChoice, botChoice){
     document.querySelector(".flex-container-rps").appendChild(botImg)
 
 }
+
+// Challenge 4: Change Colors of Buttons
+function changeBtnColors(choice){
+    var buttons = document.getElementsByTagName("button")
+    var originalColors = []
+    for(let i = 0; i < buttons.length; i++){
+        originalColors.push(buttons[i].classList[1])
+    }
+    console.log(originalColors)
+    // if(choice.value === 'random'){
+    //     randomColor()
+    // }else if(choice.value === 'red'){
+    //     specificColor(choice.value)
+    // }else if(choice.value === 'green'){
+    //     specificColor(choice.value)
+    // }else if(choice.value === 'yellow'){
+    //     specificColor(choice.value)
+    // }else if(choice.value === 'reset'){
+    //     resetColor()
+    // }
+}
