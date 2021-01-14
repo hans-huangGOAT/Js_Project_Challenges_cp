@@ -147,7 +147,11 @@ let blackjackGame = {
     'you': { 'scoreSpan': '#your-blackjack-result', 'div': '#your-box', 'score': 0 },
     'dealer': { 'scoreSpan': '#dealer-blackjack-result', 'div': '#dealer-box', 'score': 0 },
     'cards': ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'],
-    'cardMap': { '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10, 'A': [1, 11] }
+    'cardMap': { '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10, 'A': [1, 11] },
+    'wins': 0,
+    'losses': 0,
+    'drews': 0,
+
 }
 
 const hitSound = new Audio('static/sounds/swish.m4a')
@@ -205,7 +209,13 @@ function showScore(player) {
     }
 }
 
-function dealerLogic() {
+function sleep(ms){
+    return new Promise((resolve) => {
+        setTimeout(resolve, ms)
+    })
+}
+
+async function dealerLogic() {
     while (DEALER.score <= 16) {
         let card = randomCard()
         showCard(DEALER, card)
@@ -213,8 +223,48 @@ function dealerLogic() {
         console.log(DEALER.score)
         showScore(DEALER)
         hitSound.play()
+        await sleep(1000)
+    }
+    showResult(computeWinner())
+}
+
+function computeWinner() {
+    let winner
+    if (YOU.score != DEALER.score) {
+        if (YOU.score <= 21) {
+            if (YOU.score > DEALER.score) {
+                winner = YOU
+            } else if (YOU.score < DEALER.score) {
+                if (DEALER.score <= 21) {
+                    winner = DEALER
+                } else {
+                    winner = YOU
+                }
+            }
+        } else if (DEALER.score <= 21) {
+            winner = DEALER
+        }
     }
 
+    return winner
+}
+
+function showResult(winner) {
+    console.log(winner)
+    var message, messageColor
+    if (winner === YOU) {
+        message = "You won!"
+        messageColor = "green"
+    } else if (winner === DEALER) {
+        message = "You lost!"
+        messageColor = "red"
+    } else {
+        message = "You drew!"
+        messageColor = "black"
+    }
+
+    document.getElementById("blackjack-result").textContent = message
+    document.getElementById("blackjack-result").style.color = messageColor
 }
 
 function blackjackDeal() {
@@ -234,4 +284,7 @@ function blackjackDeal() {
 
     YOU.score = 0
     DEALER.score = 0
+
+    document.getElementById("blackjack-result").textContent = "Let's Play"
+    document.getElementById("blackjack-result").style.color = "black"
 }
