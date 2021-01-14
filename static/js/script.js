@@ -150,8 +150,9 @@ let blackjackGame = {
     'cardMap': { '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 10, 'Q': 10, 'K': 10, 'A': [1, 11] },
     'wins': 0,
     'losses': 0,
-    'drews': 0,
-
+    'draws': 0,
+    'isStand': false,
+    'turnsover': false,
 }
 
 const hitSound = new Audio('static/sounds/swish.m4a')
@@ -168,13 +169,15 @@ const cards = blackjackGame.cards
 const cardMap = blackjackGame.cardMap
 
 function blackjackHit() {
-    if (YOU.score <= 21) {
-        let card = randomCard()
-        showCard(YOU, card)
-        updateScore(YOU, card)
-        console.log(YOU.score)
-        showScore(YOU)
-        hitSound.play()
+    if (blackjackGame.isStand === false) {
+        if (YOU.score <= 21) {
+            let card = randomCard()
+            showCard(YOU, card)
+            updateScore(YOU, card)
+            console.log(YOU.score)
+            showScore(YOU)
+            hitSound.play()
+        }
     }
 }
 
@@ -209,13 +212,14 @@ function showScore(player) {
     }
 }
 
-function sleep(ms){
+function sleep(ms) {
     return new Promise((resolve) => {
         setTimeout(resolve, ms)
     })
 }
 
 async function dealerLogic() {
+    blackjackGame.isStand = true
     while (DEALER.score <= 16) {
         let card = randomCard()
         showCard(DEALER, card)
@@ -234,16 +238,24 @@ function computeWinner() {
         if (YOU.score <= 21) {
             if (YOU.score > DEALER.score) {
                 winner = YOU
+                blackjackGame.wins++;
             } else if (YOU.score < DEALER.score) {
                 if (DEALER.score <= 21) {
                     winner = DEALER
+                    blackjackGame.losses++;
                 } else {
                     winner = YOU
+                    blackjackGame.wins++;
                 }
             }
         } else if (DEALER.score <= 21) {
             winner = DEALER
+            blackjackGame.losses++;
+        }else{
+            blackjackGame.draws++;
         }
+    } else {
+        blackjackGame.draws++;
     }
 
     return winner
@@ -265,26 +277,37 @@ function showResult(winner) {
 
     document.getElementById("blackjack-result").textContent = message
     document.getElementById("blackjack-result").style.color = messageColor
+
+    document.querySelector("#wins").textContent = blackjackGame.wins
+    document.querySelector("#losses").textContent = blackjackGame.losses
+    document.querySelector("#draws").textContent = blackjackGame.draws
+
+    blackjackGame.turnsover = true
 }
 
 function blackjackDeal() {
-    document.querySelector(YOU.scoreSpan).textContent = 0
-    document.querySelector(YOU.scoreSpan).style.color = "white"
-    document.querySelector(DEALER.scoreSpan).textContent = 0
-    document.querySelector(DEALER.scoreSpan).style.color = "white"
+    if (blackjackGame.turnsover) {
+        document.querySelector(YOU.scoreSpan).textContent = 0
+        document.querySelector(YOU.scoreSpan).style.color = "white"
+        document.querySelector(DEALER.scoreSpan).textContent = 0
+        document.querySelector(DEALER.scoreSpan).style.color = "white"
 
-    yourImgs = document.querySelector(YOU.div).querySelectorAll("img")
-    dealerImgs = document.querySelector(DEALER.div).querySelectorAll("img")
-    for (let i = 0; i < yourImgs.length; i++) {
-        yourImgs[i].remove()
+        yourImgs = document.querySelector(YOU.div).querySelectorAll("img")
+        dealerImgs = document.querySelector(DEALER.div).querySelectorAll("img")
+        for (let i = 0; i < yourImgs.length; i++) {
+            yourImgs[i].remove()
+        }
+        for (let i = 0; i < dealerImgs.length; i++) {
+            dealerImgs[i].remove()
+        }
+
+        YOU.score = 0
+        DEALER.score = 0
+
+        blackjackGame.isStand = false
+        blackjackGame.turnsover = false
+
+        document.getElementById("blackjack-result").textContent = "Let's Play"
+        document.getElementById("blackjack-result").style.color = "black"
     }
-    for (let i = 0; i < dealerImgs.length; i++) {
-        dealerImgs[i].remove()
-    }
-
-    YOU.score = 0
-    DEALER.score = 0
-
-    document.getElementById("blackjack-result").textContent = "Let's Play"
-    document.getElementById("blackjack-result").style.color = "black"
 }
